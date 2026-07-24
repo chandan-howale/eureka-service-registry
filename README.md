@@ -39,7 +39,7 @@ Service A ──▶ Service B (192.168.1.5:8081)   Service A ──▶ Eureka: "
 |                  PAYMENT INTEGRATION SYSTEM                       |
 |                                                                   |
 |               +-------------------------+                         |
-|               |     EUREKA SERVER       |◀────── YOU ARE HERE      |
+|               |     EUREKA SERVER       |◀────── YOU ARE HERE    |
 |               |   (Service Registry)    |                         |
 |               |     Port: 8761          |                         |
 |               +------------+------------+                         |
@@ -63,19 +63,19 @@ Service A ──▶ Service B (192.168.1.5:8081)   Service A ──▶ Eureka: "
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  1. REGISTRATION                                                │
-│     Payment Service ──────▶ Eureka Server                       │
+│     Payment Service ──────▶ Eureka Server                      │
 │     "Hi, I'm Payment Service at :8081"                          │
 │     Eureka: "Registered! I'll remember you"                     │
 │                                                                 │
 │  2. HEARTBEAT (Keep Alive)                                      │
-│     Payment Service ~~~~~▶ Eureka Server                        │
+│     Payment Service ~~~~~▶ Eureka Server                       │
 │     "Still here!"                                               │
 │     Eureka: "Got it!"                                           │
 │                                                                 │
 │  3. DISCOVERY                                                   │
-│     PayPal Service ──▶ Eureka ──▶ "Where is Payment Service?"   │
+│     PayPal Service ──▶ Eureka ──▶ "Where is Payment Service?"  │
 │     Eureka: "At 192.168.1.5:8081"                               │
-│     PayPal Service ────────────▶ Payment Service                │
+│     PayPal Service ────────────▶ Payment Service               │
 │                                                                 │
 │  4. FAILOVER                                                    │
 │     If a service stops heartbeating → Eureka removes it         │
@@ -189,13 +189,19 @@ curl -X POST "http://localhost:8761/add?num1=5&num2=3"
 
 ### Application Profiles
 
-| Profile | Description | Self-Preservation |
+### What is Self-Preservation Mode?
+
+Eureka's **Self-Preservation** mode protects the service registry during network partitions. When enabled, if Eureka stops receiving heartbeats from services (due to a network issue, not actual failure), it **does NOT remove** those services from the registry. This prevents mass deregistration of healthy services just because of a temporary network glitch.
+
+| Profile | Self-Preservation | Why |
 |---|---|---|
-| local | Local development | Disabled |
-| dev | Development server | Enabled |
-| qa | Quality Assurance | Enabled |
-| uat | User Acceptance Testing | Enabled |
-| prod | Production | Enabled |
+| local | Disabled | Services restart often during development; keeping stale entries causes confusion |
+| dev | Disabled | Same as local — fast iteration needs fresh registry |
+| qa | Enabled | Closer to production; test with real behavior |
+| uat | Enabled | Pre-production environment; must match production behavior |
+| prod | Enabled | Critical — prevents mass deregistration during network issues |
+
+> **Rule of thumb**: Disabled in development for convenience, enabled in production for safety.
 
 ### Core Configuration (`application.properties`)
 
@@ -265,6 +271,7 @@ eureka-service-registry/
 │       └── java/
 │           └── com/chandan/payments/
 │               └── EurekaServiceRegistryApplicationTests.java
+|
 ├── pom.xml                  # Maven configuration
 ├── mvnw                     # Maven Wrapper (Unix)
 ├── mvnw.cmd                 # Maven Wrapper (Windows)
@@ -292,30 +299,30 @@ This Eureka Service Registry is part of the **Payment Integration System**:
 ┌─────────────────────────────────────────────────────────────────┐
 │                  PAYMENT PROCESSING FLOW                        │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
+│                                                                 │
 │  Client Request                                                 │
 │       │                                                         │
 │       ▼                                                         │
 │  ┌─────────────────┐     ┌──────────────────┐                   │
 │  │    Payment      │     │     Eureka       │                   │
-│  │    Processing   │────▶│     Server       │                   │
+│  │    Processing   │────▶│     Server      │                   │
 │  │    Service      │     │     :8761        │                   │
 │  └────────┬────────┘     └──────────────────┘                   │
-│           │                                                      │
-│           │  "Where is PayPal Provider?"                         │
-│           │◀─────────────────────────────                        │
-│           │                                                      │
-│           │  "PayPal Provider is at :8082"                       │
-│           │─────────────────────────────▶                        │
-│           │                                                      │
-│           ▼                                                      │
+│           │                                                     │
+│           │  "Where is PayPal Provider?"                        │
+│           │──────────────────────────────▶                     │
+│           │                                                     │
+│           │  "PayPal Provider is at :8082"                      │
+│           │◀──────────────────────────────                     │
+│           │                                                     │
+│           ▼                                                     │
 │  ┌─────────────────┐                                            │
 │  │    PayPal       │                                            │
 │  │    Provider     │                                            │
 │  │    Service      │                                            │
 │  │    :8082        │                                            │
 │  └─────────────────┘                                            │
-│                                                                  │
+│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
