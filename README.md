@@ -23,11 +23,11 @@ Built with **Spring Boot 3.4.2** and **Spring Cloud Netflix Eureka**, this servi
 In a microservices architecture, services are deployed across multiple instances and their locations can change. **Eureka solves this** by acting as a central phone book:
 
 ```
-Without Eureka (Hardcoded):              With Eureka (Dynamic):
+Without Eureka (Hardcoded):                            With Eureka (Dynamic):
 
-Service A ──▶ Service B (192.168.1.5:8081)   Service A ──▶ Eureka: "Where is B?"
-             ^ Hard to maintain                              Eureka: "B is at 192.168.1.5:8081"
-             ^ Breaks on redeploy                            Service A ──▶ Service B
+Service A ──▶ Service B (192.168.1.5:8081)             Service A ──▶ Eureka: "Where is B?"
+             ^ Hard to maintain                                       Eureka: "B is at 192.168.1.5:8081"
+             ^ Breaks on redeploy                                     Service A ──▶ Service B
 ```
 
 ---
@@ -286,12 +286,13 @@ eureka-service-registry/
 
 This Eureka Service Registry is part of the **Payment Integration System**:
 
+Main project repo : [payment-integration-system](https://github.com/chandan-howale/payment-integration-system)
+
 | Repository | Description | Status |
 |------------|-------------|--------|
 | [eureka-service-registry](https://github.com/chandan-howale/eureka-service-registry) | Service discovery & registry | Active |
 | [paypal-provider-service](https://github.com/chandan-howale/paypal-provider-service) | PayPal payment integration provider | Active |
 | [payment-processing-service](https://github.com/chandan-howale/payment-processing-service) | Core payment processing logic | Active |
-| [payment-integration-system](https://github.com/chandan-howale/payment-integration-system) | Umbrella project documentation | Coming Soon |
 
 ### Service Communication Flow
 
