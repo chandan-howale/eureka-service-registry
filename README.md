@@ -276,7 +276,6 @@ eureka-service-registry/
 ├── mvnw                     # Maven Wrapper (Unix)
 ├── mvnw.cmd                 # Maven Wrapper (Windows)
 ├── .gitignore               # Git ignore rules
-├── CLAUDE.md                # Claude Code configuration
 └── README.md                # This file
 ```
 
